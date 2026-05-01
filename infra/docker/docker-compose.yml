@@ -1,0 +1,10 @@
+services:
+  example-app:
+    image: node:22
+    working_dir: /app
+    volumes: ["../../:/app"]
+    command: sh -c "npm install && npx ts-node apps/example-express/src/server.ts"
+    environment:
+      - AEGIS_MODE=guard
+    ports:
+      - "3000:3000"

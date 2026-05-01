@@ -1,0 +1,30 @@
+services:
+  api:
+    build: ../../apps/api
+    environment:
+      - NODE_ENV=development
+      - AEGIS_MODE=guard
+    ports: ["4000:4000"]
+  console-web:
+    build: ../../apps/console-web
+    ports: ["3001:3000"]
+  admin-web:
+    build: ../../apps/admin-web
+    ports: ["3002:3000"]
+  marketing-site:
+    build: ../../apps/marketing-site
+    ports: ["3003:3000"]
+  detector:
+    build: ../../services/detector
+  responder:
+    build: ../../services/responder
+  threat-intel:
+    build: ../../services/threat-intel
+  billing:
+    build: ../../services/billing
+  policy-service:
+    build: ../../services/policy-service
+  audit:
+    build: ../../services/audit
+  licensing:
+    build: ../../services/licensing
