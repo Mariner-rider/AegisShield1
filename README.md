@@ -57,3 +57,9 @@ Customer-facing dashboard lives in `apps/console-web` with:
 - multi-tenant context + environment switcher
 - search/filter and sensitive-value redaction helpers
 See `docs/console-information-architecture.md` for IA and UX details.
+
+## Customer Integration Layer
+- Node SDK: `packages/sdk-node` (Express/Fastify adapters, secure config loading, policy cache, event batching, fail-open/fail-closed, monitor-only support).
+- Lightweight agent: `packages/agent` (enrollment, environment binding, heartbeat, policy sync, health reporting).
+- Example integration app: `apps/example-express`.
+- Quickstarts: `docs/sdk-node-quickstart.md`, `docs/agent-quickstart.md`.
