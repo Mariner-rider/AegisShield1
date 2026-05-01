@@ -1,0 +1,4 @@
+mode: guard
+image:
+  repository: aegis-shield/example
+  tag: latest
