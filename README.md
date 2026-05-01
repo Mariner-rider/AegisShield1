@@ -45,3 +45,15 @@ Local onboarding artifacts:
 - Troubleshooting page data: `apps/console-web/src/pages/troubleshooting.ts`
 - Success page message: `apps/console-web/src/pages/success.ts`
 - Backend onboarding API routes: `apps/api/src/onboarding/routes.ts`
+
+## Licensing and Plan Enforcement
+- Plan definitions and entitlement model are documented in `docs/licensing-and-billing-model.md`.
+- Includes trial lifecycle, grace-period behavior, credential status mapping, and monitor-only fallback behavior.
+
+## Console Dashboard
+Customer-facing dashboard lives in `apps/console-web` with:
+- required page routing map (`src/routing/routes.ts`)
+- overview widgets (`src/components/widgets.ts`)
+- multi-tenant context + environment switcher
+- search/filter and sensitive-value redaction helpers
+See `docs/console-information-architecture.md` for IA and UX details.
