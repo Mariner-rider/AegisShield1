@@ -1,0 +1,11 @@
+# Security Hardening Checklist
+- [ ] Enforce TLS everywhere (ingress + service mesh mTLS).
+- [ ] Store secrets in KMS/Vault; never in images or git.
+- [ ] Enable strict network policies between services.
+- [ ] Restrict container privileges (read-only root FS, non-root user).
+- [ ] Configure WAF + API gateway rate limiting and bot protections.
+- [ ] Enable audit log immutability and retention controls.
+- [ ] Turn on OTel tracing, structured logs, and alerting.
+- [ ] Validate backup encryption and restore drills.
+- [ ] Apply dependency/container vulnerability scanning.
+- [ ] Review RBAC least privilege across ops/admin users.
