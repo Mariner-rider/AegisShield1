@@ -1,11 +1,12 @@
-# Release Readiness Checklist (RC)
-- [ ] Policy schemas validated in CI.
-- [ ] Signed bundle verification and rollback tested.
-- [ ] Immutable audit chain integrity checks enabled.
-- [ ] High-impact action approval workflow enabled.
-- [ ] Emergency mode read-only tested in staging.
-- [ ] Runbooks reviewed by on-call/security teams.
-- [ ] Alert routing and escalation tested.
-- [ ] Threat-intel fetch failure graceful degradation verified.
-- [ ] Dependency and container vulnerability scan reviewed.
-- [ ] No hardcoded secrets; env validation enabled.
+# Release Readiness Checklist
+
+- [ ] README and core docs reviewed for accuracy and non-overclaiming language.
+- [ ] Getting-started flow tested on clean environment.
+- [ ] Demo walkthrough validated end-to-end.
+- [ ] Security hardening checklist reviewed and signed off.
+- [ ] Disaster recovery guidance reviewed with ops.
+- [ ] Billing/webhook flows validated in staging.
+- [ ] Trial conversion and entitlement transitions verified.
+- [ ] Detection and response traces verified in observability stack.
+- [ ] Honest limitations page published publicly.
+- [ ] Support/incident runbook links confirmed.
