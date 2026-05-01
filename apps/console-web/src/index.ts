@@ -11,3 +11,4 @@ export * from "./data/mock-backend";
 export * from "./onboarding/wizard";
 export * from "./pages/troubleshooting";
 export * from "./pages/success";
+export * from "./pages/subscription-billing";

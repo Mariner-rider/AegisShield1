@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: aegis-detector }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: aegis-detector } }
+  template:
+    metadata:
+      labels: { app: aegis-detector }
+    spec:
+      containers:
+        - name: detector
+          image: aegis/detector:latest
+          ports: [{ containerPort: 4100 }]
+          livenessProbe:
+            httpGet: { path: /health/live, port: 4100 }
+          readinessProbe:
+            httpGet: { path: /health/ready, port: 4100 }

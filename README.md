@@ -63,3 +63,15 @@ See `docs/console-information-architecture.md` for IA and UX details.
 - Lightweight agent: `packages/agent` (enrollment, environment binding, heartbeat, policy sync, health reporting).
 - Example integration app: `apps/example-express`.
 - Quickstarts: `docs/sdk-node-quickstart.md`, `docs/agent-quickstart.md`.
+
+## Deployment Readiness
+- Dockerfiles are provided for apps/services (`apps/*/Dockerfile`, `services/*/Dockerfile`).
+- Full local stack compose: `infra/docker/docker-compose.full-stack.yml`.
+- Kubernetes manifests: `infra/k8s/*.yaml` with readiness/liveness probes.
+- Ops docs:
+  - `docs/security-hardening-checklist.md`
+  - `docs/disaster-recovery.md`
+  - `docs/ops/secrets-management.md`
+  - `docs/ops/observability.md`
+  - `docs/ops/deployment-checklist.md`
+  - `docs/ops/data-retention.md`
