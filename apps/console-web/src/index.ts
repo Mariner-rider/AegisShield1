@@ -1,1 +1,3 @@
-export const consoleWeb = { app: "console-web", purpose: "customer dashboard" };
+export * from "./onboarding/wizard";
+export * from "./pages/troubleshooting";
+export * from "./pages/success";
