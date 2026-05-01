@@ -1,0 +1,21 @@
+version: 1.0.0
+cooldown_seconds: 30
+rules:
+  - id: brute-force
+    when: [brute-force-credential-stuffing]
+    actions: [rate_limit_actor, notify_operators, create_incident_record]
+  - id: token-reuse
+    when: [suspicious-token-reuse]
+    actions: [quarantine_session, revoke_token, notify_operators, create_incident_record]
+  - id: critical-injection
+    when: [ssrf-outbound-abuse, path-traversal-injection-heuristics]
+    actions: [block_request, disable_risky_route, notify_operators, create_incident_record]
+  - id: high-risk-fallback
+    when_risk_gte: 90
+    actions: [switch_monitor_only, notify_operators]
+approval_required_actions:
+  - global_logout
+  - project_wide_lockdown
+  - maintenance_mode
+  - service_restart_hook
+  - credential_rotation_workflow
