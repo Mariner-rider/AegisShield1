@@ -1,0 +1,41 @@
+{
+  "name": "aegis-shield",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "services/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "test": "vitest run",
+    "lint": "eslint .",
+    "dev:compose": "docker compose -f deploy/docker/docker-compose.yml up --build"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8",
+    "zod": "^3.23.8",
+    "prisma": "^6.7.0",
+    "tsup": "^8.3.0",
+    "eslint": "^9.15.0",
+    "prettier": "^3.4.1"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "cors": "^2.8.5",
+    "helmet": "^8.1.0",
+    "pino": "^9.5.0",
+    "pino-http": "^10.3.0",
+    "@prisma/client": "^6.7.0",
+    "redis": "^4.7.0",
+    "jose": "^5.9.6",
+    "argon2": "^0.41.1",
+    "ioredis": "^5.4.1",
+    "bullmq": "^5.12.7",
+    "pg": "^8.13.1",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1"
+  }
+}
