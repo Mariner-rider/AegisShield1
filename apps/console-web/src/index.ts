@@ -1,5 +1,6 @@
 export * from "./context/tenant-context";
 export * from "./components/layout";
+export * from "./components/theme";
 export * from "./components/widgets";
 export * from "./components/search-filter";
 export * from "./components/redaction";
