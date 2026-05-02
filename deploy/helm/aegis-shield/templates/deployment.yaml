@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aegis-shield
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: aegis-shield }
+  template:
+    metadata:
+      labels: { app: aegis-shield }
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          env:
+            - name: AEGIS_MODE
+              value: "{{ .Values.mode }}"
