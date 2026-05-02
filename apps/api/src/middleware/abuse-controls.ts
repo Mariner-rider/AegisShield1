@@ -1,9 +1,7 @@
-import { ensureRedisConnection, redis } from "../cache/redis";
+import { checkRateLimit, resolveTier } from "./rate-limit";
 
-export async function enforceApiRateLimit(ip: string, limit = 120, windowMs = 60_000): Promise<boolean> {
-  await ensureRedisConnection();
-  const key = `abuse:${ip}`;
-  const current = await redis.incr(key);
-  if (current === 1) await redis.pExpire(key, windowMs);
-  return current <= limit;
+export async function enforceApiRateLimit(ip: string, tenantId?: string, subscriptionTier?: string): Promise<{ ok: boolean; retryAfter: number }> {
+  const tier = resolveTier(subscriptionTier);
+  const decision = await checkRateLimit("ip", ip, tier, tenantId ?? "public");
+  return { ok: decision.allowed, retryAfter: decision.retryAfterSeconds };
 }

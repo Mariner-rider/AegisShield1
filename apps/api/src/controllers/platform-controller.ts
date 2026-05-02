@@ -1,11 +1,10 @@
 import { PlatformService } from "../services/platform-service";
-import { basicRateLimit } from "../middleware/rate-limit";
 
 const svc = new PlatformService();
 
 export const controller = {
-  signup: async (ip: string, body: unknown) => { if (!(await basicRateLimit(`signup:${ip}`, 10))) throw new Error("rate limited"); return svc.signup(body); },
-  login: async (ip: string, body: unknown) => { if (!(await basicRateLimit(`login:${ip}`, 20))) throw new Error("rate limited"); return svc.login(body); },
+  signup: async (_ip: string, body: unknown) => svc.signup(body),
+  login: async (_ip: string, body: unknown) => svc.login(body),
   createOrganization: (userId: string, body: any) => svc.createOrganization(userId, body.name, body.slug),
   createTenant: (_userId: string, orgId: string, body: any) => svc.createTenant(orgId, body.name, body.tenantKey),
   createProject: (_userId: string, tenantId: string, body: any) => svc.createProject(tenantId, body.name, body.slug),

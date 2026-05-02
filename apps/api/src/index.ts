@@ -1,16 +1,19 @@
+import http from "node:http";
 import express, { NextFunction, Request, Response } from "express";
+import { Server as SocketIOServer } from "socket.io";
 import cors from "cors";
 import helmet from "helmet";
 import pino from "pino";
 import pinoHttp from "pino-http";
 import { parsePlatformEnv } from "../../../packages/config/src";
 import { enforceApiRateLimit } from "./middleware/abuse-controls";
-import { basicRateLimit } from "./middleware/rate-limit";
+import { checkRateLimit, resolveTier } from "./middleware/rate-limit";
 import { controller } from "./controllers/platform-controller";
 import { onboardingController } from "./onboarding/controller";
 import { ssoController } from "./sso/controller";
 import { getSiemConfig, getDeadLetters, runScheduledExport, setSiemConfig } from "./siem/service";
 import { listIntegrations, triggerTestEvent, upsertIntegration } from "./integrations/soc-service";
+import { createRealtimeHub, publishRealtimeEvent, registerSseClient, unregisterSseClient } from "./realtime/hub";
 
 const env = parsePlatformEnv(process.env);
 const PORT = Number(process.env.PORT ?? 3000);
@@ -32,13 +35,45 @@ app.use(
 
 app.use(async (req, res, next) => {
   const ip = req.ip || req.socket.remoteAddress || "unknown";
-  if (!(await enforceApiRateLimit(ip, 240, 60_000))) {
-    return res.status(429).json({ error: { message: "Too many requests", code: "RATE_LIMITED", requestId: req.id } });
+  const tenantId = req.header("x-tenant-id") ?? "public";
+  const subscription = req.header("x-subscription-tier") ?? "free";
+  const tier = resolveTier(subscription);
+
+  const ipDecision = await enforceApiRateLimit(ip, tenantId, subscription);
+  if (!ipDecision.ok) {
+    res.setHeader("Retry-After", String(ipDecision.retryAfter));
+    return res.status(429).json({ error: { message: "IP rate limit exceeded", code: "RATE_LIMITED_IP", requestId: req.id } });
   }
-  if (!(await basicRateLimit(`global:${ip}`, 600, 60_000))) {
-    return res.status(429).json({ error: { message: "Too many requests", code: "ABUSE_BLOCKED", requestId: req.id } });
+
+  const userId = req.header("x-user-id");
+  if (userId) {
+    const userDecision = await checkRateLimit("user", userId, tier, tenantId);
+    if (!userDecision.allowed) {
+      res.setHeader("Retry-After", String(userDecision.retryAfterSeconds));
+      return res.status(429).json({ error: { message: "User rate limit exceeded", code: "RATE_LIMITED_USER", requestId: req.id } });
+    }
   }
+
+  const apiKey = req.header("x-api-key");
+  if (apiKey) {
+    const apiKeyDecision = await checkRateLimit("api_key", apiKey.slice(0, 10), tier, tenantId);
+    if (!apiKeyDecision.allowed) {
+      res.setHeader("Retry-After", String(apiKeyDecision.retryAfterSeconds));
+      return res.status(429).json({ error: { message: "API key rate limit exceeded", code: "RATE_LIMITED_API_KEY", requestId: req.id } });
+    }
+  }
+
   return next();
+});
+
+
+app.get("/stream/notifications", (req, res) => {
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  const id = registerSseClient((chunk) => res.write(chunk));
+  res.write(`event: connected\ndata: {"ok":true}\n\n`);
+  req.on("close", () => unregisterSseClient(id));
 });
 
 app.get("/health", (_req, res) => {
@@ -82,14 +117,18 @@ app.get("/tenants/:tenantId/siem/dead-letters", (req, res) => res.status(200).js
 
 app.post("/tenants/:tenantId/integrations", (req, res) => res.status(201).json(upsertIntegration({ ...req.body, tenantId: req.params.tenantId })));
 app.get("/tenants/:tenantId/integrations", (req, res) => res.status(200).json(listIntegrations(req.params.tenantId)));
-app.post("/tenants/:tenantId/integrations/test-trigger", async (req, res) => res.status(200).json(await triggerTestEvent(req.params.tenantId, req.body.type)));
+app.post("/tenants/:tenantId/integrations/test-trigger", async (req, res) => { const out = await triggerTestEvent(req.params.tenantId, req.body.type); await publishRealtimeEvent({ type: "integration_test", tenantId: req.params.tenantId, out, severity: "high" }); return res.status(200).json(out); });
 
 app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
   req.log.error({ err }, "request failed");
   res.status(500).json({ error: { message: err.message || "Internal Server Error", code: "INTERNAL_ERROR", requestId: req.id } });
 });
 
-const server = app.listen(PORT, HOST, () => {
+const httpServer = http.createServer(app);
+const io = new SocketIOServer(httpServer, { cors: { origin: "*" } });
+createRealtimeHub(io);
+
+const server = httpServer.listen(PORT, HOST, () => {
   logger.info({ host: HOST, port: PORT }, "aegis-api started");
 });
 
