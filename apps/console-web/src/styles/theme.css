@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+  --color-brand-50: #fff7ed;
+  --color-brand-100: #ffedd5;
+  --color-brand-200: #fed7aa;
+  --color-brand-300: #fdba74;
+  --color-brand-400: #fb923c;
+  --color-brand-500: #f97316;
+  --color-brand-600: #ea580c;
+  --color-brand-700: #c2410c;
+  --color-brand-800: #9a3412;
+  --color-brand-900: #7c2d12;
+
+  --color-neutral-50: #f8fafc;
+  --color-neutral-100: #f1f5f9;
+  --color-neutral-200: #e2e8f0;
+  --color-neutral-300: #cbd5e1;
+  --color-neutral-400: #94a3b8;
+  --color-neutral-500: #64748b;
+  --color-neutral-600: #475569;
+  --color-neutral-700: #334155;
+  --color-neutral-800: #1e293b;
+  --color-neutral-900: #0f172a;
+
+  --color-accent-500: #06b6d4;
+  --color-bg: #020617;
+  --color-surface: #0f172a;
+  --color-text: #f8fafc;
+  --color-muted: #94a3b8;
+  --focus-ring: 0 0 0 3px color-mix(in srgb, var(--color-brand-400) 60%, transparent);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  --shadow-card: 0 8px 24px rgba(15, 23, 42, 0.35);
+  --shadow-modal: 0 18px 48px rgba(2, 6, 23, 0.55);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  --motion-fast: 120ms;
+  --motion-normal: 220ms;
+  --motion-ease: cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+:root.light {
+  color-scheme: light;
+  --color-bg: #ffffff;
+  --color-surface: #f8fafc;
+  --color-text: #0f172a;
+  --color-muted: #475569;
+  --shadow-card: 0 8px 24px rgba(2, 6, 23, 0.08);
+  --shadow-modal: 0 18px 48px rgba(2, 6, 23, 0.16);
+}
+
+@theme {
+  --color-brand-500: var(--color-brand-500);
+  --color-neutral-900: var(--color-neutral-900);
+}
+
+@layer components {
+  .cs-button { border-radius: var(--radius-md); padding: var(--space-2) var(--space-4); background: var(--color-brand-500); color: var(--color-text); box-shadow: var(--shadow-card); transition: transform var(--motion-fast) var(--motion-ease), filter var(--motion-fast) var(--motion-ease); }
+  .cs-button:hover { transform: translateY(-1px); filter: brightness(1.05); }
+  .cs-input { border-radius: var(--radius-md); border: 1px solid var(--color-neutral-700); background: var(--color-surface); color: var(--color-text); padding: var(--space-2) var(--space-3); }
+  .cs-card { border-radius: var(--radius-lg); background: var(--color-surface); color: var(--color-text); box-shadow: var(--shadow-card); }
+  .cs-modal { border-radius: var(--radius-xl); background: var(--color-surface); color: var(--color-text); box-shadow: var(--shadow-modal); }
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
