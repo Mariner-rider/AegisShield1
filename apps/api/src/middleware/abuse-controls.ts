@@ -1,25 +1,9 @@
-const ipHits = new Map<string, { n: number; ts: number }>();
+import { ensureRedisConnection, redis } from "../cache/redis";
 
-function pruneExpired(windowMs: number, now: number): void {
-  for (const [key, value] of ipHits) {
-    if (now - value.ts > windowMs) {
-      ipHits.delete(key);
-    }
-  }
-}
-
-export function enforceApiRateLimit(ip: string, limit = 120, windowMs = 60_000, maxEntries = 20_000): boolean {
-  const now = Date.now();
-  if (ipHits.size > maxEntries) {
-    pruneExpired(windowMs, now);
-  }
-
-  const h = ipHits.get(ip);
-  if (!h || now - h.ts > windowMs) {
-    ipHits.set(ip, { n: 1, ts: now });
-    return true;
-  }
-
-  h.n += 1;
-  return h.n <= limit;
+export async function enforceApiRateLimit(ip: string, limit = 120, windowMs = 60_000): Promise<boolean> {
+  await ensureRedisConnection();
+  const key = `abuse:${ip}`;
+  const current = await redis.incr(key);
+  if (current === 1) await redis.pExpire(key, windowMs);
+  return current <= limit;
 }

@@ -30,12 +30,12 @@ app.use(
   })
 );
 
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   const ip = req.ip || req.socket.remoteAddress || "unknown";
-  if (!enforceApiRateLimit(ip, 240, 60_000)) {
+  if (!(await enforceApiRateLimit(ip, 240, 60_000))) {
     return res.status(429).json({ error: { message: "Too many requests", code: "RATE_LIMITED", requestId: req.id } });
   }
-  if (!basicRateLimit(`global:${ip}`, 600, 60_000)) {
+  if (!(await basicRateLimit(`global:${ip}`, 600, 60_000))) {
     return res.status(429).json({ error: { message: "Too many requests", code: "ABUSE_BLOCKED", requestId: req.id } });
   }
   return next();
@@ -47,8 +47,8 @@ app.get("/health", (_req, res) => {
 
 const userId = (req: Request) => (req.header("x-user-id") || "demo-user");
 
-app.post("/signup", (req, res) => res.status(201).json(controller.signup(req.ip, req.body)));
-app.post("/login", (req, res) => res.status(200).json(controller.login(req.ip, req.body)));
+app.post("/signup", async (req, res) => res.status(201).json(await controller.signup(req.ip, req.body)));
+app.post("/login", async (req, res) => res.status(200).json(await controller.login(req.ip, req.body)));
 app.post("/organizations", (req, res) => res.status(201).json(controller.createOrganization(userId(req), req.body)));
 app.post("/organizations/:orgId/tenants", (req, res) => res.status(201).json(controller.createTenant(userId(req), req.params.orgId, req.body)));
 app.post("/tenants/:tenantId/projects", (req, res) => res.status(201).json(controller.createProject(userId(req), req.params.tenantId, req.body)));
