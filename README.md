@@ -201,12 +201,21 @@ docker compose -f infra/docker/docker-compose.yml up -d --build
 2. Wire policy/approval checks in `services/responder/src/approval/*`.
 3. Add audit linkage in responder audit helpers.
 
-## 6.4 Add new console UI section
+## 6.4 Fast local quality checks
+Before opening a PR, run:
+```bash
+npm run lint
+npm run build
+npm test
+```
+For targeted service validation, use workspace scripts (for example `npm --workspace services/detector test`).
+
+## 6.5 Add new console UI section
 1. Update `apps/console-web/src/pages/sections.ts`.
 2. Add nav metadata in `apps/console-web/src/components/layout.ts`.
 3. Add required tests in `apps/console-web/src/components/ui.test.ts`.
 
-## 6.5 Add new integration connector
+## 6.6 Add new integration connector
 1. Create connector in `services/integrations/src/connectors/*`.
 2. Register it in delivery engine.
 3. Add tests under `tests/unit/soc-integrations.test.ts`.

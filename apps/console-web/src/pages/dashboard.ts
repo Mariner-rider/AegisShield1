@@ -11,5 +11,12 @@ export const overviewDashboardPage = {
     { label: "Mean time to resolve", value: "7m 21s", delta: "-12%" }
   ],
   loadingState: "Loading realtime telemetry and model decisions...",
+  charting: {
+    library: "@tremor/react (Recharts-backed)",
+    websocketStream: "wss://telemetry.aegis.local/console",
+    charts: ["requestVolume", "attackTypes", "protectionScore"],
+    supportsDrillDownTooltip: true,
+    supportsExportFormats: ["png", "svg"]
+  },
   emptyState: "No telemetry yet. Connect your first protected app to begin."
 };

@@ -19,3 +19,13 @@ export * from "./pages/siem-exports";
 
 export * from "./realtime/client";
 export * from "./realtime/toast";
+
+export * from "./charts/security-charts";
+
+export * from "./pages/attacks-feed";
+export * from "./pages/detections";
+export * from "./pages/response-actions";
+export * from "./pages/policy-bundles";
+export * from "./pages/audit-trail";
+export * from "./pages/settings";
+export * from "./components/global-search";
