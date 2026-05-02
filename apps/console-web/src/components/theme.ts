@@ -25,3 +25,17 @@ export const cloudShieldDarkTheme: ConsoleTheme = {
   spacing: [0, 4, 8, 12, 16, 24, 32, 40, 48],
   typography: { fontFamily: "Inter, ui-sans-serif, system-ui", titleWeight: 700, bodyWeight: 500 }
 };
+
+export const cloudShieldLightTheme: ConsoleTheme = {
+  ...cloudShieldDarkTheme,
+  name: "cloud-shield-light",
+  mode: "light",
+  neutral: { 50: "#ffffff", 100: "#f8fafc", 200: "#f1f5f9", 300: "#e2e8f0", 400: "#cbd5e1", 500: "#94a3b8", 600: "#64748b", 700: "#475569", 800: "#334155", 900: "#0f172a" },
+  elevation: { card: "0 8px 24px rgba(2,6,23,0.08)", modal: "0 18px 48px rgba(2,6,23,0.16)" }
+};
+
+export type ThemePreference = "dark" | "light";
+
+export function resolveTheme(preference: ThemePreference): ConsoleTheme {
+  return preference === "light" ? cloudShieldLightTheme : cloudShieldDarkTheme;
+}

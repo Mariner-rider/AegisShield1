@@ -29,3 +29,5 @@ export * from "./pages/policy-bundles";
 export * from "./pages/audit-trail";
 export * from "./pages/settings";
 export * from "./components/global-search";
+
+export * from "./components/theme-mode";
