@@ -15,3 +15,15 @@ export function verifySecret(secret: string, stored: string): boolean {
 export function generateToken(bytes = 32): string {
   return crypto.randomBytes(bytes).toString("base64url");
 }
+
+export function sanitizeUserInput(input: string): string {
+  return input.replace(/[<>"'`;]/g, "").trim();
+}
+
+export function enforceMinimumSecretPolicy(secret: string): boolean {
+  const hasLower = /[a-z]/.test(secret);
+  const hasUpper = /[A-Z]/.test(secret);
+  const hasNumber = /\d/.test(secret);
+  const hasSpecial = /[^A-Za-z0-9]/.test(secret);
+  return secret.length >= 14 && hasLower && hasUpper && hasNumber && hasSpecial;
+}
