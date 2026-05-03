@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AlertSeverity { LOW MEDIUM HIGH CRITICAL }
+enum ResponseStatus { PENDING APPROVED DENIED EXECUTED FAILED }
+enum SubscriptionStatus { TRIAL ACTIVE PAST_DUE CANCELED }
+
+model Tenant {
+  id            String          @id @default(cuid())
+  name          String
+  tenantKey     String          @unique
+  createdAt     DateTime        @default(now())
+  users         User[]
+  apiKeys       ApiKey[]
+  detections    DetectionEvent[]
+  alerts        Alert[]
+  responses     ResponseAction[]
+  auditLogs     AuditLog[]
+  policyBundles PolicyBundle[]
+  subscription  Subscription?
+}
+
+model User {
+  id           String    @id @default(cuid())
+  tenantId     String
+  email        String    @unique
+  fullName     String
+  passwordHash String
+  role         String    @default("owner")
+  createdAt    DateTime  @default(now())
+  tenant       Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  apiKeys      ApiKey[]  @relation("ApiKeyCreator")
+}
+
+model ApiKey {
+  id         String    @id @default(cuid())
+  tenantId    String
+  createdById String
+  label      String
+  keyPrefix  String
+  secretHash String
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+  tenant     Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  createdBy  User      @relation("ApiKeyCreator", fields: [createdById], references: [id])
+}
+
+model DetectionEvent {
+  id          String    @id @default(cuid())
+  tenantId    String
+  source      String
+  eventType   String
+  severity    AlertSeverity
+  payload     Json
+  detectedAt  DateTime  @default(now())
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model Alert {
+  id          String    @id @default(cuid())
+  tenantId    String
+  title       String
+  severity    AlertSeverity
+  status      String    @default("open")
+  detectionId String?
+  createdAt   DateTime  @default(now())
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model ResponseAction {
+  id          String         @id @default(cuid())
+  tenantId    String
+  alertId     String?
+  actionType  String
+  status      ResponseStatus @default(PENDING)
+  requestedBy String
+  createdAt   DateTime       @default(now())
+  tenant      Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  tenantId    String
+  actor       String
+  action      String
+  targetType  String
+  targetId    String
+  metadata    Json?
+  immutableHash String
+  createdAt   DateTime @default(now())
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model PolicyBundle {
+  id          String   @id @default(cuid())
+  tenantId    String
+  name        String
+  version     String
+  rules       Json
+  isActive    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model Subscription {
+  id          String             @id @default(cuid())
+  tenantId    String             @unique
+  plan        String
+  status      SubscriptionStatus @default(TRIAL)
+  startsAt    DateTime
+  endsAt      DateTime?
+  createdAt   DateTime           @default(now())
+  tenant      Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
